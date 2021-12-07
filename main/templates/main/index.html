@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+</head>
+<body>
+  <div id="container" style="width: 75%;">
+    <canvas id="population"></canvas>
+    <canvas id="population_increase"></canvas>
+    <canvas id="region_population"></canvas>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+</body>
+<script>
+    function getRandomRgb() {
+      return `rgb(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)} )`;
+    }
+
+
+    var population = {
+      type: 'line',
+      data: {
+        datasets: [{
+          data: {{ population|safe }},
+          borderColor: getRandomRgb(),
+          label: 'Population Increase',
+          fill: false
+        }],
+        labels: ['2017', '2018', '2019']
+      },
+      options: {
+        responsive: true
+      }
+    };
+    var population_increase = {
+      type: 'line',
+      data: {
+        datasets: [{
+          data: {{ population_increase|safe }},
+          borderColor: getRandomRgb(),
+          label: 'Population Increase Percentage',
+          fill: false
+        }],
+        labels: ['2017', '2018', '2019']
+      },
+      options: {
+        responsive: true
+      }
+    };
+    var region_population = {
+      type: 'line',
+      data: {
+        datasets: [
+        {% for region in region_population %}
+
+        {
+          data: {{ region.values|safe }},
+          borderColor: getRandomRgb(),
+          label: '{{ region.name|safe }}',
+          fill: false
+        },
+        {% endfor %}
+        ],
+        labels: ['2017', '2018', '2019']
+      },
+      options: {
+        responsive: true
+      }
+    };
+
+    window.onload = function() {
+      var ctx_population = document.getElementById('population').getContext('2d');
+      var ctx_population_increase = document.getElementById('population_increase').getContext('2d');
+      var ctx_region_population = document.getElementById('region_population').getContext('2d');
+      window.population = new Chart(ctx_population, population);
+      window.population_increase = new Chart(ctx_population_increase, population_increase);
+      window.region_population = new Chart(ctx_region_population, region_population);
+    };
+
+  </script>
+</html>
